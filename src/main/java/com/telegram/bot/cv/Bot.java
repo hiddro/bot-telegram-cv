@@ -6,7 +6,6 @@ import com.telegram.bot.cv.utils.Utils;
 import com.telegram.bot.cv.utils.constant.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -27,11 +26,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private final MenuService menuService;
 
-//    KeyboardBuilder keyboardBuilder;
-//
-//    public Bot(KeyboardBuilder keyboardBuilder) {
-//        this.keyboardBuilder = keyboardBuilder;
-//    }
+    private final KeyboardBuilder keyboardBuilder;
 
     @Override
     public String getBotUsername() {
@@ -56,7 +51,6 @@ public class Bot extends TelegramLongPollingBot {
         var mensage = "";
 
         if(msg.isCommand()){
-
             if(Arrays.asList(Constants.URL_MENU_START,
                     Constants.URL_MENU_INFO,
                     Constants.URL_MENU_RESUMEN,
@@ -65,13 +59,10 @@ public class Bot extends TelegramLongPollingBot {
 //                sendText(id, homeBuilder.startBuilder().replace("${Username}", update.getMessage().getFrom().getUserName()));
                 sendText(id, menuService.buildMessageMenu(msg.getText(), update));
 
-//                if(!msg.getText().equals(Constants.URL_MENU_START))
-//                    keyboardBuilder.keyboardMarkBuilder(this, update.getMessage());
-            }else{
-                sendText(id, msg.getText());
-//                keyboardBuilder.keyboardMarkBuilder(this, update.getMessage());
+                if(msg.getText().equals(Constants.URL_MENU_INFO) ||
+                    msg.getText().equals(Constants.URL_MENU_RESUMEN))
+                    keyboardBuilder.keyboardMarkBuilder(this, update.getMessage(), Utils.validatekeyboard(msg.getText()));
             }
-
         }else{
             sendText(id, msg.getText());
         }

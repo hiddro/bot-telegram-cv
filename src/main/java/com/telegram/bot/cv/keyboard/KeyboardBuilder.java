@@ -6,12 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KeyboardBuilder {
 
-    public static void keyboardMarkBuilder(AbsSender absSender, Message message){
+    public static void keyboardMarkBuilder(AbsSender absSender, Message message, List<String> options){
         // Crear el objeto SendMessage para enviar el menú
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(message.getChatId().toString());
@@ -22,21 +21,14 @@ public class KeyboardBuilder {
         keyboardMarkup.setOneTimeKeyboard(true); // Ocultar el teclado después de seleccionar una opción
 
         // Crear filas de botones del teclado
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add("Habilidades");
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add("Experiencia Laboral");
-
-        KeyboardRow row3 = new KeyboardRow();
-        row3.add("Educación");
-
-        KeyboardRow row4 = new KeyboardRow();
-        row4.add("Certificados");
-        keyboard.add(row1);
-        keyboard.add(row2);
-        keyboard.add(row3);
-        keyboard.add(row4);
+        List<KeyboardRow> keyboard = options
+                .stream()
+                .map(op -> {
+                    KeyboardRow krow = new KeyboardRow();
+                    krow.add(op);
+                    return krow;
+                })
+                .toList();
 
         // Establecer el teclado en el mensaje
         keyboardMarkup.setKeyboard(keyboard);
