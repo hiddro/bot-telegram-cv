@@ -1,7 +1,11 @@
 package com.telegram.bot.cv;
 
-import com.telegram.bot.cv.builder.HomeBuilder;
 import com.telegram.bot.cv.keyboard.KeyboardBuilder;
+import com.telegram.bot.cv.service.MenuService;
+import com.telegram.bot.cv.utils.Utils;
+import com.telegram.bot.cv.utils.constant.Constants;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -13,22 +17,21 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
+@Slf4j
 public class Bot extends TelegramLongPollingBot {
 
-    HomeBuilder homeBuilder;
+    private final MenuService menuService;
 
-    KeyboardBuilder keyboardBuilder;
-
-    public Bot(HomeBuilder homeBuilder, KeyboardBuilder keyboardBuilder) {
-        this.homeBuilder = homeBuilder;
-        this.keyboardBuilder = keyboardBuilder;
-    }
-
-    public Bot() {
-    }
-
+//    KeyboardBuilder keyboardBuilder;
+//
+//    public Bot(KeyboardBuilder keyboardBuilder) {
+//        this.keyboardBuilder = keyboardBuilder;
+//    }
 
     @Override
     public String getBotUsername() {
@@ -50,33 +53,42 @@ public class Bot extends TelegramLongPollingBot {
         var msg = update.getMessage();
         var user = msg.getFrom();
         var id = user.getId();
+        var mensage = "";
 
         if(msg.isCommand()){
-            if(msg.getText().equals("/start")){      //If the command was /scream, we switch gears
-                sendText(id, homeBuilder.startBuilder().replace("${Username}", update.getMessage().getFrom().getUserName()));
-            }
-            else{
+
+            if(Arrays.asList(Constants.URL_MENU_START,
+                    Constants.URL_MENU_INFO,
+                    Constants.URL_MENU_RESUMEN,
+                    Constants.URL_MENU_CONTACTO).contains(msg.getText())){
+                /*OLD CALL EVENT MESSAGE*/
+//                sendText(id, homeBuilder.startBuilder().replace("${Username}", update.getMessage().getFrom().getUserName()));
+                sendText(id, menuService.buildMessageMenu(msg.getText(), update));
+
+//                if(!msg.getText().equals(Constants.URL_MENU_START))
+//                    keyboardBuilder.keyboardMarkBuilder(this, update.getMessage());
+            }else{
                 sendText(id, msg.getText());
-                keyboardBuilder.keyboardMarkBuilder(this, update.getMessage());
+//                keyboardBuilder.keyboardMarkBuilder(this, update.getMessage());
             }
 
-            return;                                     //We don't want to echo commands, so we exit
+        }else{
+            sendText(id, msg.getText());
         }
 
-        //sendText(id, msg.getText());
-
+//        sendText(id, mensage);
     }
 
     public void sendText(Long who, String what){
         SendMessage sm = SendMessage.builder()
-                .chatId(who.toString()) //Who are we sending a message to
+                .chatId(who.toString())
                 .text(what)
                 .parseMode(ParseMode.MARKDOWN)
-                .build();    //Message content
+                .build();
         try {
-            execute(sm);                        //Actually sending the message
+            execute(sm);
         } catch (TelegramApiException e) {
-            e.printStackTrace();      //Any error will be printed here
+            e.printStackTrace();
         }
     }
 
@@ -93,7 +105,6 @@ public class Bot extends TelegramLongPollingBot {
         setMyCommands.setCommands(commands);
 
         try {
-            // Ejecuta el método setMyCommands para establecer los comandos del bot
             execute(setMyCommands);
         } catch (TelegramApiException e) {
             e.printStackTrace();
