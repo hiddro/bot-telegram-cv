@@ -11,7 +11,7 @@ public class Utils {
     public static List<String> validatekeyboard(String msg){
         return msg.equalsIgnoreCase(Constants.URL_MENU_INFO) ?
                 Arrays.asList("Habilidades", "Experiencia Laboral", "Educación", "Certificados") :
-                msg.equalsIgnoreCase(Constants.URL_MENU_RESUMEN) ? Arrays.asList("Curriculum Vitae", "Linkedin") : Collections.emptyList();
+                msg.equalsIgnoreCase(Constants.URL_MENU_RESUMEN) ? Arrays.asList("Curriculum Vitae", "GitHub") : Collections.emptyList();
     }
 
 }
