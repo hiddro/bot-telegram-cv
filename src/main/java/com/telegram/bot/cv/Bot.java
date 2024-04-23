@@ -48,7 +48,6 @@ public class Bot extends TelegramLongPollingBot {
         var msg = update.getMessage();
         var user = msg.getFrom();
         var id = user.getId();
-        var mensage = "";
 
         if(msg.isCommand()){
             if(Arrays.asList(Constants.URL_MENU_START,
@@ -63,8 +62,11 @@ public class Bot extends TelegramLongPollingBot {
                     msg.getText().equals(Constants.URL_MENU_RESUMEN))
                     keyboardBuilder.keyboardMarkBuilder(this, update.getMessage(), Utils.validatekeyboard(msg.getText()));
             }
-        }else{
-            sendText(id, msg.getText());
+        }else if(Arrays.asList(Constants.CAD_HABILIDADES,
+                Constants.CAD_EXPERIENCIA_LABORAL, Constants.CAD_CERTIFICADOS,
+                Constants.CAD_EDUCACION, Constants.CAD_CV,
+                Constants.CAD_GITHUB).contains(msg.getText())){
+            sendText(id, menuService.buildMessageSubMenu(msg.getText(), update));
         }
 
 //        sendText(id, mensage);

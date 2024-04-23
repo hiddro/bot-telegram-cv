@@ -32,4 +32,22 @@ public class MenuServiceImpl implements MenuService {
                 })
                 .get();
     }
+
+    @Override
+    public String buildMessageSubMenu(String msg, Update update) {
+        Menu subMenuHabilidades = new Menu(Constants.CAD_HABILIDADES, Constants.TEMPLATE_SUB_MENU_HABILIDADES);
+        Menu subMenuExpLaboral = new Menu(Constants.CAD_EXPERIENCIA_LABORAL, Constants.TEMPLATE_SUB_MENU_EXPERIENCIA_LABORAL);
+        Menu subMenuEducacion = new Menu(Constants.CAD_EDUCACION, Constants.TEMPLATE_SUB_MENU_EDUCACION);
+        Menu subMenuCertificados = new Menu(Constants.CAD_CERTIFICADOS, Constants.TEMPLATE_SUB_MENU_CERTIFICADOS);
+        Menu subMenuCv = new Menu(Constants.CAD_CV, Constants.TEMPLATE_SUB_MENU_CV);
+        Menu subMenuGitHub = new Menu(Constants.CAD_GITHUB, Constants.TEMPLATE_SUB_MENU_GITHUB);
+
+        return Arrays.asList(subMenuHabilidades, subMenuExpLaboral, subMenuEducacion,
+                        subMenuCertificados, subMenuCv, subMenuGitHub)
+                .stream()
+                .filter(el -> el.getPath().equals(msg))
+                .findFirst()
+                .map(Menu::getTemplate)
+                .get();
+    }
 }
